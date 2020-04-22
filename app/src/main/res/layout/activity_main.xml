@@ -14,38 +14,21 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?actionBarSize"
             android:id="@+id/toolbarMainActivity"
             app:titleTextColor="@color/white"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
             app:popupTheme="@style/PopupMenuStyle">
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="?actionBarSize"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:padding="2dp"
-                    android:text="@string/app_name"
-                    android:gravity="start|center_vertical"
-                    android:textSize="@dimen/_20sdp"/>
-
-                <ImageButton
-                    android:id="@+id/settings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_settings_applications_black_24dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:backgroundTint="@android:color/transparent"
-                    android:tint="@color/white"/>
-
-            </RelativeLayout>
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:padding="2dp"
+                android:text="@string/app_name"
+                android:gravity="center"
+                style="@android:style/TextAppearance.Large" />
 
         </com.google.android.material.appbar.MaterialToolbar>
 
