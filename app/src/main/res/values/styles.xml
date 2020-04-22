@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="PopupMenuStyle" parent="Theme.MaterialComponents">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
     <style name="SlidingDialogAnimation">
         <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
         <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>

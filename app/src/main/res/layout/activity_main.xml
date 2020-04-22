@@ -17,7 +17,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/toolbarMainActivity"
             app:titleTextColor="@color/white"
-            app:popupTheme="@style/Theme.MaterialComponents.DayNight">
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+            app:popupTheme="@style/PopupMenuStyle">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
