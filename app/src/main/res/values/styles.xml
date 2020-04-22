@@ -6,6 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="alertDialogTheme">@style/AlertDialogCustom</item>
+    </style>
+
+    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:colorPrimary">@color/white</item>
+        <item name="android:colorAccent">@color/white</item>
     </style>
 
     <style name="PopupMenuStyle" parent="Theme.MaterialComponents">

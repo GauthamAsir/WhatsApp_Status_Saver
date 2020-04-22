@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,6 +20,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.Display;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -148,6 +152,28 @@ public class MainActivity extends AppCompatActivity {
 
         Common.APP_DIR = getExternalFilesDir(null).getAbsolutePath() +
                 File.separator + "Status Downloader";
+
+        GetLatestAppVersion getLatestAppVersion = new GetLatestAppVersion();
+        getLatestAppVersion.execute();
+
+    }
+
+    private class GetLatestAppVersion extends AsyncTask{
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            final AppUpdater appUpdater = new AppUpdater(MainActivity.this)
+                    .setDisplay(Display.DIALOG)
+                    .setUpdateFrom(UpdateFrom.XML)
+                    .setUpdateXML("https://raw.githubusercontent.com/GauthamAsir/WhatsApp_Status_Saver/master/update.xml")
+                    .setCancelable(false)
+                    .setButtonDoNotShowAgain(null);
+
+            appUpdater.start();
+
+            return null;
+        }
     }
 
     @Override
