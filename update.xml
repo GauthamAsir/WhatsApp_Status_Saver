@@ -1,7 +1,6 @@
 <AppUpdater>
   <update>
     <latestVersion>2.6</latestVersion>
-    <latestVersionCode>2</latestVersionCode>
     <url>https://github.com/GauthamAsir/WhatsApp_Status_Saver/releases/download/2.6/WhatsApp_Status_Downloader_v2.6.apk</url>
   </update>
 </AppUpdater>
