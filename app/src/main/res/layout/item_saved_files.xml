@@ -23,33 +23,26 @@
                 android:layout_height="@dimen/_90sdp"
                 android:scaleType="centerCrop"/>
 
-            <LinearLayout
+            <ImageButton
+                android:id="@+id/save"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_below="@+id/ivThumbnail">
+                android:layout_below="@+id/ivThumbnail"
+                android:src="@drawable/ic_file_download_black"
+                android:tint="@color/white"
+                android:gravity="center"
+                android:backgroundTint="@android:color/transparent"/>
 
-                <ImageButton
-                    android:id="@+id/save"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_file_download_black"
-                    android:tint="@color/white"
-                    android:gravity="center"
-                    android:backgroundTint="@android:color/transparent"/>
-
-                <ImageButton
-                    android:id="@+id/share"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_share"
-                    android:tint="@color/white"
-                    android:gravity="center"
-                    android:backgroundTint="@android:color/transparent"/>
-
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/share"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/ivThumbnail"
+                android:src="@drawable/ic_share"
+                android:tint="@color/white"
+                android:gravity="center"
+                android:visibility="gone"
+                android:backgroundTint="@android:color/transparent"/>
 
         </RelativeLayout>
 

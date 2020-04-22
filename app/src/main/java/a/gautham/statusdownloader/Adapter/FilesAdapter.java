@@ -40,7 +40,7 @@ public class FilesAdapter extends RecyclerView.Adapter<ItemViewHolder> {
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.item_status, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_saved_files, parent, false);
         return new ItemViewHolder(view);
 
     }
@@ -71,7 +71,6 @@ public class FilesAdapter extends RecyclerView.Adapter<ItemViewHolder> {
 
                 shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+status.getFile().getAbsolutePath()));
                 context.startActivity(Intent.createChooser(shareIntent, "Share image"));
-
 
             }
         });

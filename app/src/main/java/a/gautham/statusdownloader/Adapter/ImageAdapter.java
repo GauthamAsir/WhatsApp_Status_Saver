@@ -2,8 +2,10 @@ package a.gautham.statusdownloader.Adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +56,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ItemViewHolder> {
             public void onClick(View v) {
 
                 Common.copyFile(status,context,container);
+
+            }
+        });
+
+        holder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
+                shareIntent.setType("image/jpg");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+status.getFile().getAbsolutePath()));
+                context.startActivity(Intent.createChooser(shareIntent, "Share image"));
 
             }
         });

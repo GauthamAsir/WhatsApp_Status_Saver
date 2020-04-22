@@ -2,6 +2,7 @@ package a.gautham.statusdownloader.Fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,9 @@ public class ImageFragment extends Fragment {
         progressBar = view.findViewById(R.id.prgressBarImage);
         container = view.findViewById(R.id.image_container);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
 
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(),android.R.color.holo_orange_dark)
                 ,ContextCompat.getColor(getActivity(),android.R.color.holo_green_dark),

@@ -2,6 +2,7 @@ package a.gautham.statusdownloader.Adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
@@ -50,6 +51,19 @@ public class VideoAdapter extends RecyclerView.Adapter<ItemViewHolder> {
 
         final Status status = videoList.get(position);
         holder.imageView.setImageBitmap(status.getThumbnail());
+
+        holder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
+                shareIntent.setType("image/mp4");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+status.getFile().getAbsolutePath()));
+                context.startActivity(Intent.createChooser(shareIntent, "Share image"));
+
+            }
+        });
 
         LayoutInflater inflater = LayoutInflater.from(context);
         final View view1 = inflater.inflate(R.layout.view_video_full_screen, null);
