@@ -3,7 +3,9 @@ package a.gautham.statusdownloader;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -99,10 +101,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Share App", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_privacyPolicy:
-                Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show();
+                Uri uri = Uri.parse("https://docs.google.com/document/d/1rSG7JRoBLVhW8asQkHj6s-eNXplWvtubqu1fMcEwB5U/edit?usp=sharing");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
                 return true;
             case R.id.menu_aboutUs:
-                Toast.makeText(this, "About Us", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(),AboutUs.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
