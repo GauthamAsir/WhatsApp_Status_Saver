@@ -33,6 +33,17 @@
                 android:gravity="center"
                 android:backgroundTint="@android:color/transparent"/>
 
+            <ImageButton
+                android:id="@+id/share"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/ivThumbnail"
+                android:src="@drawable/ic_share"
+                android:tint="@color/white"
+                android:gravity="center"
+                android:visibility="gone"
+                android:backgroundTint="@android:color/transparent"/>
+
         </RelativeLayout>
 
     </RelativeLayout>

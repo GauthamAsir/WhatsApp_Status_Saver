@@ -21,10 +21,14 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
     <string name="settings">Settings</string>
     <string name="rate_us">Rate Us</string>
     <string name="share_app">Share App</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="about_us">About Us</string>
+
+    <string name="saved_files">Saved Files</string>
+    <string name="no_files_found">No Files Found</string>
 
 </resources>

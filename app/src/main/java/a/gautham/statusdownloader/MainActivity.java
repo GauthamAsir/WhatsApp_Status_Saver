@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.images)));
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.videos)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.saved_files)));
         PagerAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
 

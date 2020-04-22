@@ -11,7 +11,7 @@ import a.gautham.statusdownloader.R;
 
 public class ItemViewHolder extends RecyclerView.ViewHolder{
 
-    public ImageButton save;
+    public ImageButton save, share;
     public ImageView imageView;
 
     public ItemViewHolder(@NonNull View itemView) {
@@ -19,5 +19,6 @@ public class ItemViewHolder extends RecyclerView.ViewHolder{
 
         imageView = itemView.findViewById(R.id.ivThumbnail);
         save = itemView.findViewById(R.id.save);
+        share = itemView.findViewById(R.id.share);
     }
 }

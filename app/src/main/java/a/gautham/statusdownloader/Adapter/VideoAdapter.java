@@ -11,26 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.List;
 
-import a.gautham.statusdownloader.Fragments.VideoFragment;
 import a.gautham.statusdownloader.Models.Status;
 import a.gautham.statusdownloader.R;
 import a.gautham.statusdownloader.Utils.Common;
@@ -51,10 +40,6 @@ public class VideoAdapter extends RecyclerView.Adapter<ItemViewHolder> {
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         context = parent.getContext();
-        if (Common.ITEM_VIEW_FLAG == 1){
-            View view = LayoutInflater.from(context).inflate(R.layout.item_status_2, parent, false);
-            return new ItemViewHolder(view);
-        }
         View view = LayoutInflater.from(context).inflate(R.layout.item_status, parent, false);
         return new ItemViewHolder(view);
 

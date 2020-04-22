@@ -22,10 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.util.Random;
 
-import a.gautham.statusdownloader.BuildConfig;
 import a.gautham.statusdownloader.Models.Status;
 import a.gautham.statusdownloader.R;
 
@@ -37,8 +35,6 @@ public class Common {
     static final int MICRO_KIND = 3;
 
     private static final String CHANNEL_NAME = "GAUTHAM";
-
-    public static final int ITEM_VIEW_FLAG = 0;     //Default
 
     public static final File STATUS_DIRECTORY = new File(Environment.getExternalStorageDirectory() +
             File.separator + "WhatsApp/Media/.Statuses");
