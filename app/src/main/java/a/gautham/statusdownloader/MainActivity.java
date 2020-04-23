@@ -102,7 +102,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Rate Us", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_share:
-                Toast.makeText(this, "Share App", Toast.LENGTH_SHORT).show();
+                Intent shareIntent =   new Intent(android.content.Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                String app_url = "https://github.com/GauthamAsir/WhatsApp_Status_Saver/releases";
+                shareIntent.putExtra(Intent.EXTRA_TEXT,
+                    "Hey check out my app at \n\n" + app_url);
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT,"WhatsApp Status Saver");
+                startActivity(Intent.createChooser(shareIntent, "Share via"));
+
                 return true;
             case R.id.menu_privacyPolicy:
                 Uri uri = Uri.parse("https://docs.google.com/document/d/1rSG7JRoBLVhW8asQkHj6s-eNXplWvtubqu1fMcEwB5U/edit?usp=sharing");
