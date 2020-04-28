@@ -1,17 +1,17 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "a.gautham.statusdownloader"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 2
-        versionName "2.6"
+        versionCode 1
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
     }
 
     buildTypes {
@@ -32,18 +32,21 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.preference:preference:1.1.1'
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.intuit.sdp:sdp-android:1.0.6'
-    implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.google.android.material:material:1.1.0'
+    //RetroFit
+    implementation 'com.squareup.retrofit2:retrofit:2.8.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
 
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation project(path: ':library')
+    //Recycler View
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+    //Card View
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    //Material Themes
+    implementation 'com.google.android.material:material:1.1.0'
 
 }

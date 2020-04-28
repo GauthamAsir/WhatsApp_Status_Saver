@@ -20,9 +20,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.github.javiersantos.appupdater.AppUpdater;
-import com.github.javiersantos.appupdater.enums.Display;
-import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -30,6 +27,8 @@ import com.google.android.material.tabs.TabLayout;
 import java.io.File;
 import java.util.Objects;
 
+import a.gautham.library.AppUpdater;
+import a.gautham.library.Display;
 import a.gautham.statusdownloader.Adapter.PageAdapter;
 import a.gautham.statusdownloader.Utils.Common;
 
@@ -170,13 +169,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Object doInBackground(Object[] objects) {
 
-            final AppUpdater appUpdater = new AppUpdater(MainActivity.this)
-                    .setDisplay(Display.DIALOG)
-                    .setUpdateFrom(UpdateFrom.XML)
-                    .setUpdateXML("https://raw.githubusercontent.com/GauthamAsir/WhatsApp_Status_Saver/master/update.xml")
-                    .setCancelable(false)
-                    .setButtonDoNotShowAgain(null);
-
+            AppUpdater appUpdater = new AppUpdater(MainActivity.this);
+            appUpdater.setDisplay(Display.DIALOG);
+            appUpdater.setUpGithub("GauthamAsir","WhatsApp_Status_Saver");
             appUpdater.start();
 
             return null;

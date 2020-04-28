@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_updater_new_update_available">New Update Available!</string>
+    <string name="app_updater_no_update_available">You are Up-To date. No new updates available</string>
+    <string name="app_updater_update">Update</string>
+    <string name="app_updater_cancel">Cancel</string>
+    <string name="app_updater_git_empty">Git User Name or Repo Name can\'t be Empty</string>
+    <string name="app_updater_no_internet">No Internet Available</string>
+    <string name="app_updater">App Updater</string>
+    <string name="app_updater_init_percent">0%</string>
+    <string name="app_updater_download_error">Error Downloading </string>
+    <string name="app_updater_update_downloaded">Update Downloaded</string>
+    <string name="app_updater_downloading">Downloading</string>
+</resources>
