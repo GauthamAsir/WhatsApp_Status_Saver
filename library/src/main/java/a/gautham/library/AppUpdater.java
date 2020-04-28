@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Locale;
 
 import a.gautham.library.helper.ServiceGenerator;
 import a.gautham.library.models.AssestsModel;
@@ -331,7 +332,7 @@ public class AppUpdater {
             this.app_name = update.getAsset_name();
             downloadDialog = new DownloadDialog(contextRef.get());
             downloadDialog.setDownloadName(update.getAsset_name());
-            downloadDialog.setDownloadSize(update.getAsses_sizeMb()+"MB");
+            downloadDialog.setDownloadSize(String.format(Locale.US,"%.2f MB",update.getAsses_sizeMb()));
             downloadDialog.setNegativeBtnListener(new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
