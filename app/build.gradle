@@ -44,6 +44,5 @@ dependencies {
 
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation project(path: ':library')
 
 }

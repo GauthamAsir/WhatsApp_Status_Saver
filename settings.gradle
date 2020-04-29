@@ -1,2 +1,2 @@
 rootProject.name='Status Downloader'
-include ':app', ':library'
+include ':app'
