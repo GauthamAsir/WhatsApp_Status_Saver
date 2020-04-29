@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.Objects;
 
 import a.gautham.library.AppUpdater;
-import a.gautham.library.Display;
+import a.gautham.library.helper.Display;
 import a.gautham.statusdownloader.Adapter.PageAdapter;
 import a.gautham.statusdownloader.Utils.Common;
 
