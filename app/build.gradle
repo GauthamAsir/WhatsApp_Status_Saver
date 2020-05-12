@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('E:\\000Gautham\\Documents\\Documents\\0000TEMP\\mellow_rjsweets.jks')
+            storePassword 'agav0012'
+            keyAlias = 'gautham'
+            keyPassword 'agav0012'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
@@ -10,8 +18,11 @@ android {
         targetSdkVersion 29
         versionCode 3
         versionName "3.0"
-
+        Date date = new Date()
+        String d = date.format('_ddMMYYYY')
+        setProperty("archivesBaseName", "WhatsApp_Status_Downloader_v$versionName$d")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.release
     }
 
     buildTypes {
