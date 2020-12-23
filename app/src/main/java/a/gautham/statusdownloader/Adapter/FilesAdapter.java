@@ -14,9 +14,11 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -48,8 +50,9 @@ public class FilesAdapter extends RecyclerView.Adapter<ItemViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final ItemViewHolder holder, int position) {
 
-        holder.save.setVisibility(View.GONE);
+        holder.save.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_baseline_delete_24));
         holder.share.setVisibility(View.VISIBLE);
+        holder.save.setVisibility(View.VISIBLE);
 
         final Status status = imagesList.get(position);
 
@@ -57,6 +60,15 @@ public class FilesAdapter extends RecyclerView.Adapter<ItemViewHolder> {
             holder.imageView.setImageBitmap(status.getThumbnail());
         else
             Picasso.get().load(status.getFile()).into(holder.imageView);
+
+        holder.save.setOnClickListener(view -> {
+            if (status.getFile().delete()) {
+                imagesList.remove(position);
+                notifyDataSetChanged();
+                Toast.makeText(context, "File Deleted", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(context, "Unable to Delete File", Toast.LENGTH_SHORT).show();
+        });
 
         holder.share.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -9,42 +9,44 @@
     app:cardUseCompatPadding="true">
 
     <RelativeLayout
+        android:id="@+id/rl1"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <ImageView
+            android:id="@+id/ivThumbnail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/rl1">
+            android:layout_height="@dimen/_90sdp"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop" />
 
-            <ImageView
-                android:id="@+id/ivThumbnail"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_90sdp"
-                android:scaleType="centerCrop"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivThumbnail"
+            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/save"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/ivThumbnail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:src="@drawable/ic_file_download_black"
                 android:tint="@color/white"
-                android:gravity="center"
-                android:backgroundTint="@android:color/transparent"/>
+                android:backgroundTint="@android:color/transparent"
+                android:contentDescription="@null" />
 
             <ImageButton
                 android:id="@+id/share"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/ivThumbnail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:src="@drawable/ic_share"
                 android:tint="@color/white"
-                android:gravity="center"
-                android:visibility="gone"
-                android:backgroundTint="@android:color/transparent"/>
+                android:backgroundTint="@android:color/transparent"
+                android:contentDescription="@null" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 

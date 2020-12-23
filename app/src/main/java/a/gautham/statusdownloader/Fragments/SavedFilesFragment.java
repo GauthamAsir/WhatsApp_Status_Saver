@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -121,7 +120,8 @@ public class SavedFilesFragment extends Fragment {
                             @Override
                             public void run() {
                                 progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getActivity(), "Dir doest not exists", Toast.LENGTH_SHORT).show();
+                                no_files_found.setVisibility(View.VISIBLE);
+//                                Toast.makeText(getActivity(), "Dir doest not exists", Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -132,6 +132,7 @@ public class SavedFilesFragment extends Fragment {
 
         }else {
             no_files_found.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
         }
 
     }
