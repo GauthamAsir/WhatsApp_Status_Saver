@@ -37,5 +37,6 @@
     <string name="contact">Contact</string>
     <string name="telegram_link">https://t.me/Mellow04</string>
     <string name="developer">Developer</string>
+    <string name="check_for_update">Check for update</string>
 
 </resources>

@@ -120,6 +120,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_aboutUs:
                 startActivity(new Intent(getApplicationContext(), AboutUs.class));
                 return true;
+            case R.id.menu_checkUpdate:
+                GetLatestAppVersion getLatestAppVersion = new GetLatestAppVersion();
+                getLatestAppVersion.execute();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -160,9 +164,6 @@ public class MainActivity extends AppCompatActivity {
 
         Common.APP_DIR = Environment.getExternalStorageDirectory().getPath() +
                 File.separator + "StatusDownloader";
-
-        GetLatestAppVersion getLatestAppVersion = new GetLatestAppVersion();
-        getLatestAppVersion.execute();
 
     }
 
