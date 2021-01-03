@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,25 +17,19 @@ public class AboutUs extends AppCompatActivity {
         setContentView(R.layout.activity_about_us);
 
         CardView contact = findViewById(R.id.contact);
-        contact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        contact.setOnClickListener(v -> {
 
-                Intent sendtelegram = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.telegram_link)));
-                startActivity(sendtelegram);
+            Intent sendtelegram = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.telegram_link)));
+            startActivity(sendtelegram);
 
-            }
         });
 
         CardView email = findViewById(R.id.email);
-        email.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
-                String mail = "mailto:" + getString(R.string.mail_id);
-                sendEmail.setData(Uri.parse(mail));
-                startActivity(sendEmail);
-            }
+        email.setOnClickListener(v -> {
+            Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
+            String mail = "mailto:" + getString(R.string.mail_id);
+            sendEmail.setData(Uri.parse(mail));
+            startActivity(sendEmail);
         });
 
         TextView app_version = findViewById(R.id.app_version);

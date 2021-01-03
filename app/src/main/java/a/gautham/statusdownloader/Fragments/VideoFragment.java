@@ -1,6 +1,5 @@
 package a.gautham.statusdownloader.Fragments;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -33,8 +32,8 @@ public class VideoFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private List<Status> videoList = new ArrayList<>();
-    private Handler handler = new Handler();
+    private final List<Status> videoList = new ArrayList<>();
+    private final Handler handler = new Handler();
     private VideoAdapter videoAdapter;
     private RelativeLayout container;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -42,8 +41,7 @@ public class VideoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_videos,container,false);
-        return root;
+        return inflater.inflate(R.layout.fragment_videos, container, false);
     }
 
     @Override
@@ -57,20 +55,15 @@ public class VideoFragment extends Fragment {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
-        swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(),android.R.color.holo_orange_dark)
-                ,ContextCompat.getColor(getActivity(),android.R.color.holo_green_dark),
-                ContextCompat.getColor(getActivity(),R.color.colorPrimary),
-                ContextCompat.getColor(getActivity(),android.R.color.holo_blue_dark));
+        swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(requireActivity(), android.R.color.holo_orange_dark)
+                , ContextCompat.getColor(requireActivity(), android.R.color.holo_green_dark),
+                ContextCompat.getColor(requireActivity(), R.color.colorPrimary),
+                ContextCompat.getColor(requireActivity(), android.R.color.holo_blue_dark));
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getStatus();
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::getStatus);
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), Common.GRID_COUNT));
 
         getStatus();
 
@@ -79,61 +72,52 @@ public class VideoFragment extends Fragment {
 
     private void getStatus() {
 
-        if (Common.STATUS_DIRECTORY.exists()){
+        if (Common.STATUS_DIRECTORY.exists()) {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    File[] statusFiles = Common.STATUS_DIRECTORY.listFiles();
+            new Thread(() -> {
+                File[] statusFiles = Common.STATUS_DIRECTORY.listFiles();
+                videoList.clear();
 
-                    if (statusFiles!=null && statusFiles.length>0){
+                if (statusFiles != null && statusFiles.length > 0) {
 
-                        Arrays.sort(statusFiles);
-                        for (File file : statusFiles){
-                            Status status = new Status(file, file.getName(), file.getAbsolutePath());
+                    Arrays.sort(statusFiles);
+                    for (File file : statusFiles) {
+                        Status status = new Status(file, file.getName(), file.getAbsolutePath());
 
-                            if (status.isVideo()){
-                                videoList.add(status);
-                                status.setThumbnail(getThumbnail(status));
-                            }
-
+                        if (status.isVideo()) {
+                            videoList.add(status);
                         }
 
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                videoAdapter = new VideoAdapter(videoList, container);
-                                recyclerView.setAdapter(videoAdapter);
-                                videoAdapter.notifyDataSetChanged();
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        });
-
-                    }else {
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getActivity(), "Dir doest not exists", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
                     }
-                    swipeRefreshLayout.setRefreshing(false);
+
+                    handler.post(() -> {
+                        videoAdapter = new VideoAdapter(videoList, container);
+                        recyclerView.setAdapter(videoAdapter);
+                        videoAdapter.notifyDataSetChanged();
+                        progressBar.setVisibility(View.GONE);
+                    });
+
+                } else {
+
+                    handler.post(() -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(), "Dir doest not exists", Toast.LENGTH_SHORT).show();
+                    });
+
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }).start();
 
-        }else {
+        } else {
             Toast.makeText(getActivity(), "Cant find WhatsApp Dir", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         }
 
     }
 
-    private Bitmap getThumbnail(Status status) {
-        return a.gautham.statusdownloader.Utils.ThumbnailUtils.createVideoThumbnail(status.getFile().getAbsolutePath(),
-                3);
-    }
+//    private Bitmap getThumbnail(Status status) {
+//        return a.gautham.statusdownloader.Utils.ThumbnailUtils.createVideoThumbnail(status.getFile().getAbsolutePath(),
+//                3);
+//    }
 
 }

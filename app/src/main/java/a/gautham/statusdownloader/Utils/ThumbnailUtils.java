@@ -21,7 +21,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.media.MediaMetadataRetriever;
-import android.provider.MediaStore.Images;
 
 /**
  * Thumbnail generation routines for media provider.
@@ -108,9 +107,8 @@ public class ThumbnailUtils {
         }
         Matrix matrix = new Matrix();
         matrix.setScale(scale, scale);
-        Bitmap thumbnail = transform(matrix, source, width, height,
+        return transform(matrix, source, width, height,
                 OPTIONS_SCALE_UP | options);
-        return thumbnail;
     }
 
     /**

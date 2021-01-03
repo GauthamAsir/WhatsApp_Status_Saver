@@ -26,9 +26,9 @@ import a.gautham.statusdownloader.Utils.Common;
 
 public class ImageAdapter extends RecyclerView.Adapter<ItemViewHolder> {
 
-    private List<Status> imagesList;
+    private final List<Status> imagesList;
     private Context context;
-    private RelativeLayout container;
+    private final RelativeLayout container;
 
     public ImageAdapter(List<Status> imagesList, RelativeLayout container) {
         this.imagesList = imagesList;
@@ -51,47 +51,34 @@ public class ImageAdapter extends RecyclerView.Adapter<ItemViewHolder> {
         final Status status = imagesList.get(position);
         Picasso.get().load(status.getFile()).into(holder.imageView);
 
-        holder.save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.save.setOnClickListener(v -> Common.copyFile(status, context, container));
 
-                Common.copyFile(status,context,container);
+        holder.share.setOnClickListener(v -> {
 
-            }
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
+            shareIntent.setType("image/jpg");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + status.getFile().getAbsolutePath()));
+            context.startActivity(Intent.createChooser(shareIntent, "Share image"));
+
         });
 
-        holder.share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.imageView.setOnClickListener(v -> {
 
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            final AlertDialog.Builder alertD = new AlertDialog.Builder(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(R.layout.view_image_full_screen, null);
+            alertD.setView(view);
 
-                shareIntent.setType("image/jpg");
-                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+status.getFile().getAbsolutePath()));
-                context.startActivity(Intent.createChooser(shareIntent, "Share image"));
+            ImageView imageView = view.findViewById(R.id.img);
+            Picasso.get().load(status.getFile()).into(imageView);
 
-            }
-        });
+            AlertDialog alert = alertD.create();
+            alert.getWindow().getAttributes().windowAnimations = R.style.SlidingDialogAnimation;
+            alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alert.show();
 
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final AlertDialog.Builder alertD = new AlertDialog.Builder(context);
-                LayoutInflater inflater = LayoutInflater.from(context);
-                View view = inflater.inflate(R.layout.view_image_full_screen, null);
-                alertD.setView(view);
-
-                ImageView imageView = view.findViewById(R.id.img);
-                Picasso.get().load(status.getFile()).into(imageView);
-
-                AlertDialog alert = alertD.create();
-                alert.getWindow().getAttributes().windowAnimations = R.style.SlidingDialogAnimation;
-                alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                alert.show();
-
-            }
         });
 
     }

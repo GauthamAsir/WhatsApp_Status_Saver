@@ -32,8 +32,8 @@ public class ImageFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private List<Status> imagesList = new ArrayList<>();
-    private Handler handler = new Handler();
+    private final List<Status> imagesList = new ArrayList<>();
+    private final Handler handler = new Handler();
     private ImageAdapter imageAdapter;
     private RelativeLayout container;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -41,8 +41,7 @@ public class ImageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_images,container,false);
-        return root;
+        return inflater.inflate(R.layout.fragment_images, container, false);
     }
 
     @Override
@@ -57,20 +56,15 @@ public class ImageFragment extends Fragment {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
-        swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(),android.R.color.holo_orange_dark)
-                ,ContextCompat.getColor(getActivity(),android.R.color.holo_green_dark),
-                ContextCompat.getColor(getActivity(),R.color.colorPrimary),
-                ContextCompat.getColor(getActivity(),android.R.color.holo_blue_dark));
+        swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(requireActivity(), android.R.color.holo_orange_dark)
+                , ContextCompat.getColor(requireActivity(), android.R.color.holo_green_dark),
+                ContextCompat.getColor(requireActivity(), R.color.colorPrimary),
+                ContextCompat.getColor(requireActivity(), android.R.color.holo_blue_dark));
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getStatus();
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::getStatus);
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), Common.GRID_COUNT));
 
         getStatus();
 
@@ -78,54 +72,45 @@ public class ImageFragment extends Fragment {
 
     private void getStatus() {
 
-        if (Common.STATUS_DIRECTORY.exists()){
+        if (Common.STATUS_DIRECTORY.exists()) {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    File[] statusFiles = null;
-                    statusFiles = Common.STATUS_DIRECTORY.listFiles();
-                    imagesList.clear();
+            new Thread(() -> {
+                File[] statusFiles;
+                statusFiles = Common.STATUS_DIRECTORY.listFiles();
+                imagesList.clear();
 
-                    if (statusFiles!=null && statusFiles.length>0){
+                if (statusFiles != null && statusFiles.length > 0) {
 
-                        Arrays.sort(statusFiles);
-                        for (File file : statusFiles){
-                            Status status = new Status(file, file.getName(), file.getAbsolutePath());
+                    Arrays.sort(statusFiles);
+                    for (File file : statusFiles) {
+                        Status status = new Status(file, file.getName(), file.getAbsolutePath());
 
-                            if (!status.isVideo()){
-                                imagesList.add(status);
-                            }
-
+                        if (!status.isVideo() && status.getTitle().endsWith(".jpg")) {
+                            imagesList.add(status);
                         }
 
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                imageAdapter = new ImageAdapter(imagesList,container);
-                                recyclerView.setAdapter(imageAdapter);
-                                imageAdapter.notifyDataSetChanged();
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        });
-
-                    }else {
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getActivity(), "Dir doest not exists", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
                     }
-                    swipeRefreshLayout.setRefreshing(false);
+
+                    handler.post(() -> {
+
+                        imageAdapter = new ImageAdapter(imagesList, container);
+                        recyclerView.setAdapter(imageAdapter);
+                        imageAdapter.notifyDataSetChanged();
+                        progressBar.setVisibility(View.GONE);
+                    });
+
+                } else {
+
+                    handler.post(() -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(), "Dir doest not exists", Toast.LENGTH_SHORT).show();
+                    });
+
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }).start();
 
-        }else {
+        } else {
             Toast.makeText(getActivity(), "Cant find WhatsApp Dir", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         }

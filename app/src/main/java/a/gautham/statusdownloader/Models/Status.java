@@ -1,14 +1,11 @@
 package a.gautham.statusdownloader.Models;
 
-import android.graphics.Bitmap;
-
 import java.io.File;
 
 public class Status {
 
-    private String MP4 = ".mp4";
     private File file;
-    private Bitmap thumbnail;
+//    private Bitmap thumbnail;
     private String title;
     private String path;
     private boolean isVideo;
@@ -17,6 +14,7 @@ public class Status {
         this.file = file;
         this.title = title;
         this.path = path;
+        String MP4 = ".mp4";
         this.isVideo = file.getName().endsWith(MP4);
     }
 
@@ -28,13 +26,13 @@ public class Status {
         this.file = file;
     }
 
-    public Bitmap getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
-    }
+//    public Bitmap getThumbnail() {
+//        return thumbnail;
+//    }
+//
+//    public void setThumbnail(Bitmap thumbnail) {
+//        this.thumbnail = thumbnail;
+//    }
 
     public String getTitle() {
         return title;

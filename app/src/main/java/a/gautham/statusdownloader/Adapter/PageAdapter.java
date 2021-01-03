@@ -11,7 +11,7 @@ import a.gautham.statusdownloader.Fragments.VideoFragment;
 
 public class PageAdapter extends FragmentPagerAdapter {
 
-    private int totalTabs;
+    private final int totalTabs;
 
     public PageAdapter(@NonNull FragmentManager fm, int totalTabs) {
         super(fm);

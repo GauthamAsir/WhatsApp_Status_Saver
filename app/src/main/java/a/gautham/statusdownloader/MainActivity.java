@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         PagerAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
 
-        Toast.makeText(MainActivity.this,"by Mellow",Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "by Mellow", Toast.LENGTH_LONG).show();
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -86,27 +87,28 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
-            if(menu instanceof MenuBuilder){
-                MenuBuilder m = (MenuBuilder) menu;
-                m.setOptionalIconsVisible(true);
-            }
+        if (menu instanceof MenuBuilder) {
+            MenuBuilder m = (MenuBuilder) menu;
+            m.setOptionalIconsVisible(true);
+        }
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
             case R.id.menu_rateUs:
                 Toast.makeText(this, "Rate Us", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_share:
-                Intent shareIntent =   new Intent(android.content.Intent.ACTION_SEND);
+                Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
                 String app_url = "https://github.com/GauthamAsir/WhatsApp_Status_Saver/releases";
                 shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Hey check out my app at \n\n" + app_url);
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT,"WhatsApp Status Saver");
+                        "Hey check out my app at \n\n" + app_url);
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "WhatsApp Status Saver");
                 startActivity(Intent.createChooser(shareIntent, "Share via"));
 
                 return true;
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.menu_aboutUs:
-                startActivity(new Intent(getApplicationContext(),AboutUs.class));
+                startActivity(new Intent(getApplicationContext(), AboutUs.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -129,18 +131,18 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode==REQUEST_PERMISSIONS && grantResults.length>0){
-            if (arePermissionDenied()){
+        if (requestCode == REQUEST_PERMISSIONS && grantResults.length > 0) {
+            if (arePermissionDenied()) {
                 ((ActivityManager) Objects.requireNonNull(this.getSystemService(ACTIVITY_SERVICE))).clearApplicationUserData();
                 recreate();
             }
         }
     }
 
-    private boolean arePermissionDenied(){
+    private boolean arePermissionDenied() {
 
-        for (String permissions : PERMISSIONS){
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(),permissions) != PackageManager.PERMISSION_GRANTED){
+        for (String permissions : PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), permissions) != PackageManager.PERMISSION_GRANTED) {
                 return true;
             }
         }
@@ -156,37 +158,37 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Common.APP_DIR = getExternalFilesDir(null).getAbsolutePath() +
-                File.separator + "Status Downloader";
+        Common.APP_DIR = Environment.getExternalStorageDirectory().getPath() +
+                File.separator + "StatusDownloader";
 
         GetLatestAppVersion getLatestAppVersion = new GetLatestAppVersion();
         getLatestAppVersion.execute();
 
     }
 
-    private class GetLatestAppVersion extends AsyncTask{
+    @Override
+    public void onBackPressed() {
+
+        if (back_pressed + 2000 > System.currentTimeMillis()) {
+            finish();
+            moveTaskToBack(true);
+        } else {
+            Snackbar.make(viewPager, "Press Again to Exit", Snackbar.LENGTH_LONG).show();
+            back_pressed = System.currentTimeMillis();
+        }
+    }
+
+    private class GetLatestAppVersion extends AsyncTask {
 
         @Override
         protected Object doInBackground(Object[] objects) {
 
             AppUpdater appUpdater = new AppUpdater(MainActivity.this);
             appUpdater.setDisplay(Display.DIALOG);
-            appUpdater.setUpGithub("GauthamAsir","WhatsApp_Status_Saver");
+            appUpdater.setUpGithub("GauthamAsir", "WhatsApp_Status_Saver");
             appUpdater.start();
 
             return null;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        if (back_pressed + 2000 > System.currentTimeMillis()){
-            finish();
-            moveTaskToBack(true);
-        }else {
-            Snackbar.make(viewPager, "Press Again to Exit", Snackbar.LENGTH_LONG).show();
-            back_pressed = System.currentTimeMillis();
         }
     }
 
