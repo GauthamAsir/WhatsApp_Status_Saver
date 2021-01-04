@@ -67,7 +67,8 @@ public class Common {
         try {
 
             org.apache.commons.io.FileUtils.copyFile(status.getFile(), destFile);
-
+            destFile.setLastModified(System.currentTimeMillis());
+            new SingleMediaScanner(context, file);
             showNotification(context, container, destFile, status);
 
         } catch (IOException e) {
