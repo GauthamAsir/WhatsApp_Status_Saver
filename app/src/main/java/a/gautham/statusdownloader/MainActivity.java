@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        GetLatestAppVersion getLatestAppVersion = new GetLatestAppVersion();
+        getLatestAppVersion.execute();
+
         MaterialToolbar toolbar = findViewById(R.id.toolbarMainActivity);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
@@ -186,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
             AppUpdater appUpdater = new AppUpdater(MainActivity.this);
             appUpdater.setDisplay(Display.DIALOG);
+            appUpdater.setDialogAlertStyle(R.style.dialogAlertStyle);
             appUpdater.setUpGithub("GauthamAsir", "WhatsApp_Status_Saver");
             appUpdater.start();
 
