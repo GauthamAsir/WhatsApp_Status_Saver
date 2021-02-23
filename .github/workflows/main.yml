@@ -1,37 +1,54 @@
 name: Android Master
 
 on:
-  pull_request:
-    branches:
-      - 'master'
   push:
     branches:
       - 'master'
-
 jobs:
+  testing:
+    name: Lint Check and Testing
 
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Clone Repo
+        uses: actions/checkout@v1
+
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Run Unit tests
-        run: bash ./gradlew test --stacktrace
 
-  sonar:
-    name: SonarCloud Scan
-    runs-on: ubuntu-18.04
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: SonarCloud Scan
-        run: bash ./gradlew jacocoUnitTestReport sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }} --stacktrace
+      # Step 2: Decode Google services configuration file
+      - name: Decode google-services.json
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Link to SonarCloud Report
-        run: echo "https://sonarcloud.io/dashboard?id=wkrzywiec_WaWa-Tabor"
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+        run: echo $FIREBASE_CONFIG > app/google-services.json
+
+      # Step 3: Check the code with ktlint, you can remove this job if you don't use ktlint
+      - name: Run Kotlin Linter
+        run: ./gradlew ktlintStagingDebugCheck
+
+      # Step 3: Check the code with Android linter
+      - name: Run Android Linter
+        run: ./gradlew lintStagingDebug
+
+      # Step 4: Yun your unit tests
+      - name: Run Unit Tests
+        run: ./gradlew testStagingDebugUnitTest
+
+      # Step 4: Assemble debug apk to send to firebase test lab
+      - name: Assemble Debug APK
+        run: ./gradlew assembleStagingDebug
+
+      # Step 4: Assemble debug test apk to send to firebase test lab
+      - name: Assemble Debug Test APK
+        run: ./gradlew assembleStagingDebugAndroidTest
+
+      # Step 4: Run instrumented tests on firebase test lab
+      - name: Run tests on Firebase Test Lab
+        uses: asadmansr/Firebase-Test-Lab-Action@v1.0
+        with:
+          arg-spec: '.github/test-lab-config-staging.yml:android-pixel-4'
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
