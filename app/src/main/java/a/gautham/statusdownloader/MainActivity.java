@@ -3,6 +3,7 @@ package a.gautham.statusdownloader;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.AppOpsManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    private static final String MANAGE_EXTERNAL_STORAGE_PERMISSION = "android:manage_external_storage";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +150,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    boolean checkStorageApi30() {
+        AppOpsManager appOps = getApplicationContext().getSystemService(AppOpsManager.class);
+        int mode = appOps.unsafeCheckOpNoThrow(
+                MANAGE_EXTERNAL_STORAGE_PERMISSION,
+                getApplicationContext().getApplicationInfo().uid,
+                getApplicationContext().getPackageName()
+        );
+        return mode != AppOpsManager.MODE_ALLOWED;
+
+    }
+
     private boolean arePermissionDenied() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return checkStorageApi30();
+        }
 
         for (String permissions : PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), permissions) != PackageManager.PERMISSION_GRANTED) {
