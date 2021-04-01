@@ -120,9 +120,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_privacyPolicy:
                 startActivity(new Intent(getApplicationContext(), PrivacyPolicy.class));
-//                Uri uri = Uri.parse("https://docs.google.com/document/d/1rSG7JRoBLVhW8asQkHj6s-eNXplWvtubqu1fMcEwB5U/edit?usp=sharing");
-//                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-//                startActivity(intent);
                 return true;
             case R.id.menu_aboutUs:
                 startActivity(new Intent(getApplicationContext(), AboutUs.class));
@@ -202,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class GetLatestAppVersion extends AsyncTask {
 
         @Override
