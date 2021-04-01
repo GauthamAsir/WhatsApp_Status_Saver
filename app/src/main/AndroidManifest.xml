@@ -23,6 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".PrivacyPolicy"></activity>
         <activity android:name=".AboutUs" />
         <activity android:name=".SplashActivity">
             <intent-filter>
@@ -37,12 +38,12 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="a.gautham.statusdownloader.provider"
             android:exported="false"
-            tools:replace="android:authorities"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"
-                tools:replace="android:resource"/>
+                tools:replace="android:resource" />
         </provider>
     </application>
 
