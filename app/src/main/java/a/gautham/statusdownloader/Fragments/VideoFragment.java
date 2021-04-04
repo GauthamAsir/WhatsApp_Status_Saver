@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class VideoFragment extends Fragment {
     private VideoAdapter videoAdapter;
     private RelativeLayout container;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView messageTextView;
 
     @Nullable
     @Override
@@ -51,6 +53,7 @@ public class VideoFragment extends Fragment {
         progressBar = view.findViewById(R.id.prgressBarVideo);
         container = view.findViewById(R.id.videos_container);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        messageTextView = view.findViewById(R.id.messageTextVideo);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -91,6 +94,15 @@ public class VideoFragment extends Fragment {
                     }
 
                     handler.post(() -> {
+
+                        if (videoList.size() <= 0) {
+                            messageTextView.setVisibility(View.VISIBLE);
+                            messageTextView.setText(R.string.no_files_found);
+                        } else {
+                            messageTextView.setVisibility(View.GONE);
+                            messageTextView.setText("");
+                        }
+
                         videoAdapter = new VideoAdapter(videoList, container);
                         recyclerView.setAdapter(videoAdapter);
                         videoAdapter.notifyDataSetChanged();
@@ -101,7 +113,9 @@ public class VideoFragment extends Fragment {
 
                     handler.post(() -> {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(), "Dir doest not exists", Toast.LENGTH_SHORT).show();
+                        messageTextView.setVisibility(View.VISIBLE);
+                        messageTextView.setText(R.string.no_files_found);
+                        Toast.makeText(getActivity(), getString(R.string.no_files_found), Toast.LENGTH_SHORT).show();
                     });
 
                 }
@@ -109,15 +123,12 @@ public class VideoFragment extends Fragment {
             }).start();
 
         } else {
-            Toast.makeText(getActivity(), "Cant find WhatsApp Dir", Toast.LENGTH_SHORT).show();
+            messageTextView.setVisibility(View.VISIBLE);
+            messageTextView.setText(R.string.cant_find_whatsapp_dir);
+            Toast.makeText(getActivity(), getString(R.string.cant_find_whatsapp_dir), Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         }
 
     }
-
-//    private Bitmap getThumbnail(Status status) {
-//        return a.gautham.statusdownloader.Utils.ThumbnailUtils.createVideoThumbnail(status.getFile().getAbsolutePath(),
-//                3);
-//    }
 
 }
