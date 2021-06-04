@@ -77,50 +77,11 @@ public class VideoFragment extends Fragment {
 
         if (Common.STATUS_DIRECTORY.exists()) {
 
-            new Thread(() -> {
-                File[] statusFiles = Common.STATUS_DIRECTORY.listFiles();
-                videoList.clear();
+            execute(Common.STATUS_DIRECTORY);
 
-                if (statusFiles != null && statusFiles.length > 0) {
+        } else if (Common.STATUS_DIRECTORY_NEW.exists()) {
 
-                    Arrays.sort(statusFiles);
-                    for (File file : statusFiles) {
-                        Status status = new Status(file, file.getName(), file.getAbsolutePath());
-
-                        if (status.isVideo()) {
-                            videoList.add(status);
-                        }
-
-                    }
-
-                    handler.post(() -> {
-
-                        if (videoList.size() <= 0) {
-                            messageTextView.setVisibility(View.VISIBLE);
-                            messageTextView.setText(R.string.no_files_found);
-                        } else {
-                            messageTextView.setVisibility(View.GONE);
-                            messageTextView.setText("");
-                        }
-
-                        videoAdapter = new VideoAdapter(videoList, container);
-                        recyclerView.setAdapter(videoAdapter);
-                        videoAdapter.notifyDataSetChanged();
-                        progressBar.setVisibility(View.GONE);
-                    });
-
-                } else {
-
-                    handler.post(() -> {
-                        progressBar.setVisibility(View.GONE);
-                        messageTextView.setVisibility(View.VISIBLE);
-                        messageTextView.setText(R.string.no_files_found);
-                        Toast.makeText(getActivity(), getString(R.string.no_files_found), Toast.LENGTH_SHORT).show();
-                    });
-
-                }
-                swipeRefreshLayout.setRefreshing(false);
-            }).start();
+            execute(Common.STATUS_DIRECTORY_NEW);
 
         } else {
             messageTextView.setVisibility(View.VISIBLE);
@@ -129,6 +90,53 @@ public class VideoFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(false);
         }
 
+    }
+
+    private void execute(File waFolder) {
+        new Thread(() -> {
+            File[] statusFiles = waFolder.listFiles();
+            videoList.clear();
+
+            if (statusFiles != null && statusFiles.length > 0) {
+
+                Arrays.sort(statusFiles);
+                for (File file : statusFiles) {
+                    Status status = new Status(file, file.getName(), file.getAbsolutePath());
+
+                    if (status.isVideo()) {
+                        videoList.add(status);
+                    }
+
+                }
+
+                handler.post(() -> {
+
+                    if (videoList.size() <= 0) {
+                        messageTextView.setVisibility(View.VISIBLE);
+                        messageTextView.setText(R.string.no_files_found);
+                    } else {
+                        messageTextView.setVisibility(View.GONE);
+                        messageTextView.setText("");
+                    }
+
+                    videoAdapter = new VideoAdapter(videoList, container);
+                    recyclerView.setAdapter(videoAdapter);
+                    videoAdapter.notifyDataSetChanged();
+                    progressBar.setVisibility(View.GONE);
+                });
+
+            } else {
+
+                handler.post(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    messageTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText(R.string.no_files_found);
+                    Toast.makeText(getActivity(), getString(R.string.no_files_found), Toast.LENGTH_SHORT).show();
+                });
+
+            }
+            swipeRefreshLayout.setRefreshing(false);
+        }).start();
     }
 
 }

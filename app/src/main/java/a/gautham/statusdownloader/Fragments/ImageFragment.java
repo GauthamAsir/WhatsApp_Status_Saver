@@ -77,51 +77,11 @@ public class ImageFragment extends Fragment {
 
         if (Common.STATUS_DIRECTORY.exists()) {
 
-            new Thread(() -> {
-                File[] statusFiles;
-                statusFiles = Common.STATUS_DIRECTORY.listFiles();
-                imagesList.clear();
+            execute(Common.STATUS_DIRECTORY);
 
-                if (statusFiles != null && statusFiles.length > 0) {
+        } else if (Common.STATUS_DIRECTORY_NEW.exists()) {
 
-                    Arrays.sort(statusFiles);
-                    for (File file : statusFiles) {
-                        Status status = new Status(file, file.getName(), file.getAbsolutePath());
-
-                        if (!status.isVideo() && status.getTitle().endsWith(".jpg")) {
-                            imagesList.add(status);
-                        }
-
-                    }
-
-                    handler.post(() -> {
-
-                        if (imagesList.size() <= 0) {
-                            messageTextView.setVisibility(View.VISIBLE);
-                            messageTextView.setText(R.string.no_files_found);
-                        } else {
-                            messageTextView.setVisibility(View.GONE);
-                            messageTextView.setText("");
-                        }
-
-                        imageAdapter = new ImageAdapter(imagesList, container);
-                        recyclerView.setAdapter(imageAdapter);
-                        imageAdapter.notifyDataSetChanged();
-                        progressBar.setVisibility(View.GONE);
-                    });
-
-                } else {
-
-                    handler.post(() -> {
-                        progressBar.setVisibility(View.GONE);
-                        messageTextView.setVisibility(View.VISIBLE);
-                        messageTextView.setText(R.string.no_files_found);
-                        Toast.makeText(getActivity(), getString(R.string.no_files_found), Toast.LENGTH_SHORT).show();
-                    });
-
-                }
-                swipeRefreshLayout.setRefreshing(false);
-            }).start();
+            execute(Common.STATUS_DIRECTORY_NEW);
 
         } else {
             messageTextView.setVisibility(View.VISIBLE);
@@ -131,4 +91,53 @@ public class ImageFragment extends Fragment {
         }
 
     }
+
+    private void execute(File wAFolder) {
+        new Thread(() -> {
+            File[] statusFiles;
+            statusFiles = wAFolder.listFiles();
+            imagesList.clear();
+
+            if (statusFiles != null && statusFiles.length > 0) {
+
+                Arrays.sort(statusFiles);
+                for (File file : statusFiles) {
+                    Status status = new Status(file, file.getName(), file.getAbsolutePath());
+
+                    if (!status.isVideo() && status.getTitle().endsWith(".jpg")) {
+                        imagesList.add(status);
+                    }
+
+                }
+
+                handler.post(() -> {
+
+                    if (imagesList.size() <= 0) {
+                        messageTextView.setVisibility(View.VISIBLE);
+                        messageTextView.setText(R.string.no_files_found);
+                    } else {
+                        messageTextView.setVisibility(View.GONE);
+                        messageTextView.setText("");
+                    }
+
+                    imageAdapter = new ImageAdapter(imagesList, container);
+                    recyclerView.setAdapter(imageAdapter);
+                    imageAdapter.notifyDataSetChanged();
+                    progressBar.setVisibility(View.GONE);
+                });
+
+            } else {
+
+                handler.post(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    messageTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText(R.string.no_files_found);
+                    Toast.makeText(getActivity(), getString(R.string.no_files_found), Toast.LENGTH_SHORT).show();
+                });
+
+            }
+            swipeRefreshLayout.setRefreshing(false);
+        }).start();
+    }
+
 }
