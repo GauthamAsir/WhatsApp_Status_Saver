@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_checkUpdate"
+        android:checked="false"
+        android:icon="@drawable/ic_baseline_update"
+        android:title="@string/check_for_update"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_rateUs"
+        android:title="@string/rate_us"
+        android:icon="@drawable/ic_star_border"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_share"
+        android:title="@string/share_app"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/menu_privacyPolicy"
+        android:title="@string/privacy_policy"
+        android:icon="@drawable/ic_security"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_aboutUs"
+        android:title="@string/about_us"
+        android:icon="@drawable/ic_info_outline"
+        android:checked="false"
+        app:showAsAction="never"/>
+
+</menu>
