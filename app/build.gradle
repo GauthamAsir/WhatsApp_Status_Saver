@@ -9,13 +9,12 @@ android {
             keyPassword 'agav0012'
         }
     }
-    compileSdkVersion 30
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "a.gautham.statusdownloader"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode 4
         versionName "4.6"
         Date date = new Date()
