@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -49,7 +49,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ItemViewHolder> {
     public void onBindViewHolder(@NonNull final ItemViewHolder holder, int position) {
 
         final Status status = imagesList.get(position);
-        Picasso.get().load(status.getFile()).into(holder.imageView);
+        if (status.isApi30()) {
+            holder.save.setVisibility(View.GONE);
+            Glide.with(context).load(status.getDocumentFile().getUri()).into(holder.imageView);
+        } else {
+            holder.save.setVisibility(View.VISIBLE);
+            Glide.with(context).load(status.getFile()).into(holder.imageView);
+        }
 
         holder.save.setOnClickListener(v -> Common.copyFile(status, context, container));
 
@@ -58,7 +64,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ItemViewHolder> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
 
             shareIntent.setType("image/jpg");
-            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + status.getFile().getAbsolutePath()));
+
+            if (status.isApi30()) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, status.getDocumentFile().getUri());
+            } else {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + status.getFile().getAbsolutePath()));
+            }
+
             context.startActivity(Intent.createChooser(shareIntent, "Share image"));
 
         });
@@ -71,7 +83,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ItemViewHolder> {
             alertD.setView(view);
 
             ImageView imageView = view.findViewById(R.id.img);
-            Picasso.get().load(status.getFile()).into(imageView);
+            if (status.isApi30()) {
+                Glide.with(context).load(status.getDocumentFile().getUri()).into(imageView);
+            } else {
+                Glide.with(context).load(status.getFile()).into(imageView);
+            }
 
             AlertDialog alert = alertD.create();
             alert.getWindow().getAttributes().windowAnimations = R.style.SlidingDialogAnimation;

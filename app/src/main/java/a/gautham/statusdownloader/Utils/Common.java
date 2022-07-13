@@ -1,5 +1,7 @@
 package a.gautham.statusdownloader.Utils;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,8 +28,6 @@ import java.util.Random;
 import a.gautham.statusdownloader.Models.Status;
 import a.gautham.statusdownloader.R;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
 public class Common {
 
     static final int MINI_KIND = 1;
@@ -39,9 +39,6 @@ public class Common {
 
     public static final File STATUS_DIRECTORY = new File(Environment.getExternalStorageDirectory() +
             File.separator + "WhatsApp/Media/.Statuses");
-
-    public static final File STATUS_DIRECTORY_NEW = new File(Environment.getExternalStorageDirectory() +
-            File.separator + "Android/media/com.whatsapp/WhatsApp/Media/.Statuses");
 
     public static String APP_DIR;
 
@@ -69,10 +66,22 @@ public class Common {
 
         try {
 
-            org.apache.commons.io.FileUtils.copyFile(status.getFile(), destFile);
+            if (status.isApi30()) {
+                return;
+//                File fff = new File(status.getDocumentFile().getUri().getPath());
+//                System.out.println("LOL: " + fff.getPath());
+//                System.out.println("LOL 2: " + destFile.getPath());
+//                List<UriPermission> list = context.getContentResolver().getPersistedUriPermissions();
+//                copyFile(context, status.getDocumentFile().getUri().getPath(), Objects.requireNonNull(status.getDocumentFile().getName()),
+//                        list.get(0).getUri());
+            } else {
+                org.apache.commons.io.FileUtils.copyFile(status.getFile(), destFile);
+            }
+
             destFile.setLastModified(System.currentTimeMillis());
             new SingleMediaScanner(context, file);
-            showNotification(context, container, destFile, status);
+
+//            showNotification(context, container, destFile, status);
 
         } catch (IOException e) {
             e.printStackTrace();

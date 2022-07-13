@@ -2,18 +2,24 @@ package a.gautham.statusdownloader;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AppOpsManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.storage.StorageManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,8 +32,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
-import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 
 import a.gautham.library.AppUpdater;
 import a.gautham.library.helper.Display;
@@ -45,15 +51,38 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    private static final String MANAGE_EXTERNAL_STORAGE_PERMISSION = "android:manage_external_storage";
+    private Context context;
+
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+
+                    Intent data = result.getData();
+
+                    assert data != null;
+
+                    Log.d("HEY: ", data.getData().toString());
+
+                    context.getContentResolver().takePersistableUriPermission(
+                            data.getData(),
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GetLatestAppVersion getLatestAppVersion = new GetLatestAppVersion();
-        getLatestAppVersion.execute();
+        context = getApplicationContext();
+
+        checkForUpdate();
 
         MaterialToolbar toolbar = findViewById(R.id.toolbarMainActivity);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -62,7 +91,11 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.images)));
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.videos)));
-        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.saved_files)));
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.saved_files)));
+        }
+
         PagerAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
 
@@ -125,8 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), AboutUs.class));
                 return true;
             case R.id.menu_checkUpdate:
-                GetLatestAppVersion getLatestAppVersion = new GetLatestAppVersion();
-                getLatestAppVersion.execute();
+                checkForUpdate();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -147,22 +179,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    boolean checkStorageApi30() {
-        AppOpsManager appOps = getApplicationContext().getSystemService(AppOpsManager.class);
-        int mode = appOps.unsafeCheckOpNoThrow(
-                MANAGE_EXTERNAL_STORAGE_PERMISSION,
-                getApplicationContext().getApplicationInfo().uid,
-                getApplicationContext().getPackageName()
-        );
-        return mode != AppOpsManager.MODE_ALLOWED;
-
-    }
-
     private boolean arePermissionDenied() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return checkStorageApi30();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return getContentResolver().getPersistedUriPermissions().size() <= 0;
         }
 
         for (String permissions : PERMISSIONS) {
@@ -182,9 +202,47 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Common.APP_DIR = Environment.getExternalStorageDirectory().getPath() +
-                File.separator + "StatusDownloader";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && arePermissionDenied()) {
 
+            // If Android 10+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                requestPermissionQ();
+                return;
+            }
+
+            requestPermissions(PERMISSIONS, REQUEST_PERMISSIONS);
+            return;
+        }
+
+        Common.APP_DIR = getExternalFilesDir("StatusDownloader").getPath();
+        Log.d("App Path", Common.APP_DIR);
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void requestPermissionQ() {
+        StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+
+        Intent intent = sm.getPrimaryStorageVolume().createOpenDocumentTreeIntent();
+        String startDir = "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F.Statuses";
+
+        Uri uri = intent.getParcelableExtra("android.provider.extra.INITIAL_URI");
+
+        String scheme = uri.toString();
+        scheme = scheme.replace("/root/", "/document/");
+        scheme += "%3A" + startDir;
+
+        uri = Uri.parse(scheme);
+
+        Log.d("URI", uri.toString());
+
+        intent.putExtra("android.provider.extra.INITIAL_URI", uri);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+
+        activityResultLauncher.launch(intent);
     }
 
     @Override
@@ -199,20 +257,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class GetLatestAppVersion extends AsyncTask {
+    private void checkForUpdate() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Handler mainHandler = new Handler(Looper.getMainLooper());
 
-        @Override
-        protected Object doInBackground(Object[] objects) {
+            mainHandler.post(() -> {
+                AppUpdater appUpdater = new AppUpdater(MainActivity.this);
+                appUpdater.setDisplay(Display.DIALOG);
+                appUpdater.setDialogAlertStyle(R.style.dialogAlertStyle);
+                appUpdater.setUpGithub("GauthamAsir", "WhatsApp_Status_Saver");
+                appUpdater.start();
+            });
 
-            AppUpdater appUpdater = new AppUpdater(MainActivity.this);
-            appUpdater.setDisplay(Display.DIALOG);
-            appUpdater.setDialogAlertStyle(R.style.dialogAlertStyle);
-            appUpdater.setUpGithub("GauthamAsir", "WhatsApp_Status_Saver");
-            appUpdater.start();
-
-            return null;
-        }
+        });
     }
 
 }
