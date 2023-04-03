@@ -16,7 +16,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 4
-        versionName "4.7"
+        versionName "4.8"
         Date date = new Date()
         String d = date.format('_ddMMYYYY')
         setProperty("archivesBaseName", "WhatsApp_Status_Downloader_v$versionName$d")
