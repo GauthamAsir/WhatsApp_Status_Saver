@@ -22,11 +22,13 @@ public class PageAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if (position == 1) {
+        if (position == 0)
+            return new ImageFragment();
+
+        if (position == 1)
             return new VideoFragment();
-        }else if (position == 2)
-            return new SavedFilesFragment();
-        return new ImageFragment();
+
+        return new SavedFilesFragment();
 
     }
 

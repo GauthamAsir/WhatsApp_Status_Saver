@@ -51,14 +51,25 @@ public class VideoAdapter extends RecyclerView.Adapter<ItemViewHolder> {
     public void onBindViewHolder(@NonNull final ItemViewHolder holder, int position) {
 
         final Status status = videoList.get(position);
-        Glide.with(context).asBitmap().load(status.getFile()).into(holder.imageView);
+
+        if (status.isApi30()) {
+//            holder.save.setVisibility(View.GONE);
+            Glide.with(context).load(status.getDocumentFile().getUri()).into(holder.imageView);
+        } else {
+//            holder.save.setVisibility(View.VISIBLE);
+            Glide.with(context).load(status.getFile()).into(holder.imageView);
+        }
 
         holder.share.setOnClickListener(v -> {
 
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
 
             shareIntent.setType("image/mp4");
-            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + status.getFile().getAbsolutePath()));
+            if (status.isApi30()) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, status.getDocumentFile().getUri());
+            } else {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + status.getFile().getAbsolutePath()));
+            }
             context.startActivity(Intent.createChooser(shareIntent, "Share image"));
 
         });
@@ -91,7 +102,12 @@ public class VideoAdapter extends RecyclerView.Adapter<ItemViewHolder> {
 
             videoView.setMediaController(mediaController);
             mediaController.setMediaPlayer(videoView);
-            videoView.setVideoURI(Uri.fromFile(status.getFile()));
+
+            if (status.isApi30()) {
+                videoView.setVideoURI(status.getDocumentFile().getUri());
+            } else {
+                videoView.setVideoURI(Uri.fromFile(status.getFile()));
+            }
             videoView.requestFocus();
 
             ((ViewGroup) mediaController.getParent()).removeView(mediaController);

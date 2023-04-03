@@ -1,7 +1,10 @@
 package a.gautham.statusdownloader.Fragments;
 
+import android.content.UriPermission;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +27,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
 
 import a.gautham.statusdownloader.Adapter.ImageAdapter;
 import a.gautham.statusdownloader.Models.Status;
@@ -34,7 +40,7 @@ public class ImageFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private final List<Status> imagesList = new ArrayList<>();
-    private final Handler handler = new Handler();
+
     private ImageAdapter imageAdapter;
     private RelativeLayout container;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -75,13 +81,13 @@ public class ImageFragment extends Fragment {
 
     private void getStatus() {
 
-        if (Common.STATUS_DIRECTORY.exists()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
-            execute(Common.STATUS_DIRECTORY);
+            executeNew();
 
-        } else if (Common.STATUS_DIRECTORY_NEW.exists()) {
+        } else if (Common.STATUS_DIRECTORY.exists()) {
 
-            execute(Common.STATUS_DIRECTORY_NEW);
+            executeOld();
 
         } else {
             messageTextView.setVisibility(View.VISIBLE);
@@ -92,16 +98,24 @@ public class ImageFragment extends Fragment {
 
     }
 
-    private void execute(File wAFolder) {
-        new Thread(() -> {
+    private void executeOld() {
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+
             File[] statusFiles;
-            statusFiles = wAFolder.listFiles();
+            statusFiles = Common.STATUS_DIRECTORY.listFiles();
             imagesList.clear();
 
             if (statusFiles != null && statusFiles.length > 0) {
 
                 Arrays.sort(statusFiles);
                 for (File file : statusFiles) {
+
+                    if (file.getName().contains(".nomedia"))
+                        continue;
+
                     Status status = new Status(file, file.getName(), file.getAbsolutePath());
 
                     if (!status.isVideo() && status.getTitle().endsWith(".jpg")) {
@@ -110,7 +124,7 @@ public class ImageFragment extends Fragment {
 
                 }
 
-                handler.post(() -> {
+                mainHandler.post(() -> {
 
                     if (imagesList.size() <= 0) {
                         messageTextView.setVisibility(View.VISIBLE);
@@ -122,13 +136,13 @@ public class ImageFragment extends Fragment {
 
                     imageAdapter = new ImageAdapter(imagesList, container);
                     recyclerView.setAdapter(imageAdapter);
-                    imageAdapter.notifyDataSetChanged();
+                    imageAdapter.notifyItemRangeChanged(0, imagesList.size());
                     progressBar.setVisibility(View.GONE);
                 });
 
             } else {
 
-                handler.post(() -> {
+                mainHandler.post(() -> {
                     progressBar.setVisibility(View.GONE);
                     messageTextView.setVisibility(View.VISIBLE);
                     messageTextView.setText(R.string.no_files_found);
@@ -137,7 +151,74 @@ public class ImageFragment extends Fragment {
 
             }
             swipeRefreshLayout.setRefreshing(false);
-        }).start();
+
+        });
+    }
+
+    private void executeNew() {
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+
+            List<UriPermission> list = requireActivity().getContentResolver().getPersistedUriPermissions();
+
+            DocumentFile file = DocumentFile.fromTreeUri(requireActivity(), list.get(0).getUri());
+
+            imagesList.clear();
+
+            if (file == null) {
+                mainHandler.post(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    messageTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText(R.string.no_files_found);
+                    Toast.makeText(getActivity(), getString(R.string.no_files_found), Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+                return;
+            }
+
+            DocumentFile[] statusFiles = file.listFiles();
+
+            if (statusFiles.length <= 0) {
+                mainHandler.post(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    messageTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText(R.string.no_files_found);
+                    Toast.makeText(getActivity(), getString(R.string.no_files_found), Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                });
+                return;
+            }
+
+            for (DocumentFile documentFile : statusFiles) {
+
+                if (Objects.requireNonNull(documentFile.getName()).contains(".nomedia"))
+                    continue;
+
+                Status status = new Status(documentFile);
+
+                if (!status.isVideo()) {
+                    imagesList.add(status);
+                }
+            }
+
+            mainHandler.post(() -> {
+
+                if (imagesList.size() <= 0) {
+                    messageTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText(R.string.no_files_found);
+                } else {
+                    messageTextView.setVisibility(View.GONE);
+                    messageTextView.setText("");
+                }
+
+                imageAdapter = new ImageAdapter(imagesList, container);
+                recyclerView.setAdapter(imageAdapter);
+                imageAdapter.notifyItemRangeChanged(0, imagesList.size());
+                progressBar.setVisibility(View.GONE);
+            });
+
+        });
     }
 
 }

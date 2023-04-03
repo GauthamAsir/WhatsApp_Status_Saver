@@ -1,6 +1,8 @@
 package a.gautham.statusdownloader.Fragments;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.view.LayoutInflater;
@@ -73,13 +75,22 @@ public class SavedFilesFragment extends Fragment {
 
         final File app_dir = new File(Common.APP_DIR);
 
-        if (app_dir.exists()) {
+        if (app_dir.exists() ||
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
             no_files_found.setVisibility(View.GONE);
 
             new Thread(() -> {
                 File[] savedFiles;
-                savedFiles = app_dir.listFiles();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    File f = new File(Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DCIM
+                    ) + File.separator + "status_saver");
+                    savedFiles = f.listFiles();
+                } else {
+                    savedFiles = app_dir.listFiles();
+                }
                 savedFilesList.clear();
 
                 if (savedFiles != null && savedFiles.length > 0) {

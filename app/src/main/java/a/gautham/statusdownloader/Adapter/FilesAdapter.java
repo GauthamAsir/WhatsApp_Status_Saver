@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -56,11 +55,22 @@ public class FilesAdapter extends RecyclerView.Adapter<ItemViewHolder> {
 
         final Status status = imagesList.get(position);
 
-        if (status.isVideo())
-            Glide.with(context).asBitmap().load(status.getFile()).into(holder.imageView);
-//            holder.imageView.setImageBitmap(status.getThumbnail());
-        else
-            Picasso.get().load(status.getFile()).into(holder.imageView);
+        if (status.isApi30()) {
+            Glide.with(context).load(status.getDocumentFile().getUri()).into(holder.imageView);
+        } else {
+            Glide.with(context).load(status.getFile()).into(holder.imageView);
+        }
+
+//        if (status.isVideo())
+//            Glide.with(context).asBitmap().load(status.getFile()).into(holder.imageView);
+////            holder.imageView.setImageBitmap(status.getThumbnail());
+//        else {
+//            if(status.isApi30()) {
+//                Glide.with(context).load(status.getDocumentFile().getUri()).into(holder.imageView);
+//            } else  {
+//                Glide.with(context).load(status.getFile()).into(holder.imageView);
+//            }
+//        }
 
         holder.save.setOnClickListener(view -> {
             if (status.getFile().delete()) {
@@ -142,7 +152,11 @@ public class FilesAdapter extends RecyclerView.Adapter<ItemViewHolder> {
                 alertD.setView(view);
 
                 ImageView imageView = view.findViewById(R.id.img);
-                Picasso.get().load(status.getFile()).into(imageView);
+                if (status.isApi30()) {
+                    Glide.with(context).load(status.getDocumentFile().getUri()).into(imageView);
+                } else {
+                    Glide.with(context).load(status.getFile()).into(imageView);
+                }
 
                 AlertDialog alert = alertD.create();
                 alert.getWindow().getAttributes().windowAnimations = R.style.SlidingDialogAnimation;
