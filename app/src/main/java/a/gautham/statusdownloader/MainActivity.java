@@ -51,6 +51,13 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
+    @SuppressLint("InlinedApi")
+    private static final String[] NOTIFICATION_PERMISSION = {
+            Manifest.permission.POST_NOTIFICATIONS
+    };
+
+    private static final int NOTIFICATION_REQUEST_PERMISSIONS = 4;
+
     private Context context;
 
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
@@ -92,9 +99,11 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.images)));
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.videos)));
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.saved_files)));
-        }
+///        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+///
+///        }
+
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.saved_files)));
 
         PagerAdapter adapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
@@ -198,11 +207,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && arePermissionDenied()) {
-            requestPermissions(PERMISSIONS, REQUEST_PERMISSIONS);
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && arePermissionDenied()) {
 
             // If Android 10+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -211,11 +215,19 @@ public class MainActivity extends AppCompatActivity {
             }
 
             requestPermissions(PERMISSIONS, REQUEST_PERMISSIONS);
-            return;
         }
 
-        Common.APP_DIR = getExternalFilesDir("StatusDownloader").getPath();
-        Log.d("App Path", Common.APP_DIR);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(NOTIFICATION_PERMISSION,
+                    NOTIFICATION_REQUEST_PERMISSIONS);
+        }
+
+        if (Common.APP_DIR == null || Common.APP_DIR.isEmpty()) {
+            Common.APP_DIR = getExternalFilesDir("StatusDownloader").getPath();
+            Log.d("App Path", Common.APP_DIR);
+        }
 
     }
 

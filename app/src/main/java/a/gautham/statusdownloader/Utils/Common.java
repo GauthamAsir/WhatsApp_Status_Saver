@@ -5,11 +5,13 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.RequiresApi;
@@ -18,8 +20,12 @@ import androidx.core.content.FileProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -29,10 +35,6 @@ import a.gautham.statusdownloader.Models.Status;
 import a.gautham.statusdownloader.R;
 
 public class Common {
-
-    static final int MINI_KIND = 1;
-    static final int MICRO_KIND = 3;
-
     public static final int GRID_COUNT = 2;
 
     private static final String CHANNEL_NAME = "GAUTHAM";
@@ -66,22 +68,46 @@ public class Common {
 
         try {
 
-            if (status.isApi30()) {
-                return;
-//                File fff = new File(status.getDocumentFile().getUri().getPath());
-//                System.out.println("LOL: " + fff.getPath());
-//                System.out.println("LOL 2: " + destFile.getPath());
-//                List<UriPermission> list = context.getContentResolver().getPersistedUriPermissions();
-//                copyFile(context, status.getDocumentFile().getUri().getPath(), Objects.requireNonNull(status.getDocumentFile().getName()),
-//                        list.get(0).getUri());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+                ContentValues values = new ContentValues();
+
+                Uri destinationUri;
+
+                values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+                values.put(MediaStore.MediaColumns.RELATIVE_PATH,
+                        Environment.DIRECTORY_DCIM + "/status_saver");
+
+                Uri collectionUri;
+                if (status.isVideo()) {
+                    values.put(MediaStore.MediaColumns.MIME_TYPE, "video/*");
+                    collectionUri = MediaStore.Video.Media.getContentUri(
+                            MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                } else {
+                    values.put(MediaStore.MediaColumns.MIME_TYPE, "image/*");
+                    collectionUri = MediaStore.Images.Media.getContentUri(
+                            MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                }
+
+                destinationUri = context.getContentResolver().insert(collectionUri, values);
+
+                InputStream inputStream = context.getContentResolver().openInputStream(status.getDocumentFile().getUri());
+                OutputStream outputStream = context.getContentResolver().openOutputStream(destinationUri);
+                IOUtils.copy(inputStream, outputStream);
+
+                showNotification(context, container, status, fileName, destinationUri);
+
             } else {
                 org.apache.commons.io.FileUtils.copyFile(status.getFile(), destFile);
+                //noinspection ResultOfMethodCallIgnored
+                destFile.setLastModified(System.currentTimeMillis());
+                new SingleMediaScanner(context, file);
+
+                Uri data = FileProvider.getUriForFile(context, "a.gautham.statusdownloader.provider",
+                        new File(destFile.getAbsolutePath()));
+
+                showNotification(context, container, status, fileName, data);
             }
-
-            destFile.setLastModified(System.currentTimeMillis());
-            new SingleMediaScanner(context, file);
-
-//            showNotification(context, container, destFile, status);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,13 +115,13 @@ public class Common {
 
     }
 
-    private static void showNotification(Context context, RelativeLayout container, File destFile, Status status) {
+    private static void showNotification(Context context, RelativeLayout container, Status status,
+                                         String fileName, Uri data) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             makeNotificationChannel(context);
         }
 
-        Uri data = FileProvider.getUriForFile(context, "a.gautham.statusdownloader" + ".provider", new File(destFile.getAbsolutePath()));
         Intent intent = new Intent(Intent.ACTION_VIEW);
 
         if (status.isVideo()) {
@@ -105,17 +131,28 @@ public class Common {
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getActivity(context, 0, intent,
+                    PendingIntent.FLAG_MUTABLE);
+        } else {
+            pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        }
 
         NotificationCompat.Builder notification =
                 new NotificationCompat.Builder(context, CHANNEL_NAME);
 
         notification.setSmallIcon(R.drawable.ic_file_download_black)
-                .setContentTitle(destFile.getName())
-                .setContentText("File Saved to" + APP_DIR)
+                .setContentTitle(fileName)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            notification.setContentText("File Saved to " +
+                    Environment.DIRECTORY_DCIM + "/status_saver");
+        else
+            notification.setContentText("File Saved to" + APP_DIR);
 
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -123,7 +160,11 @@ public class Common {
         assert notificationManager != null;
         notificationManager.notify(new Random().nextInt(), notification.build());
 
-        Snackbar.make(container, "Saved to " + Common.APP_DIR, Snackbar.LENGTH_LONG).show();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+            Snackbar.make(container, "Saved to " + Common.APP_DIR, Snackbar.LENGTH_LONG).show();
+        else
+            Snackbar.make(container, "Saved to " + Environment.DIRECTORY_DCIM + "/status_saver",
+                    Snackbar.LENGTH_LONG).show();
 
     }
 

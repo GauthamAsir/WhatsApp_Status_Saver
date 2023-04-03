@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 import a.gautham.statusdownloader.Adapter.ImageAdapter;
@@ -112,6 +113,10 @@ public class ImageFragment extends Fragment {
 
                 Arrays.sort(statusFiles);
                 for (File file : statusFiles) {
+
+                    if (file.getName().contains(".nomedia"))
+                        continue;
+
                     Status status = new Status(file, file.getName(), file.getAbsolutePath());
 
                     if (!status.isVideo() && status.getTitle().endsWith(".jpg")) {
@@ -187,6 +192,10 @@ public class ImageFragment extends Fragment {
             }
 
             for (DocumentFile documentFile : statusFiles) {
+
+                if (Objects.requireNonNull(documentFile.getName()).contains(".nomedia"))
+                    continue;
+
                 Status status = new Status(documentFile);
 
                 if (!status.isVideo()) {
