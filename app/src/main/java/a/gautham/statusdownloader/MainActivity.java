@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
                     assert data != null;
 
-                    Log.d("HEY: ", data.getData().toString());
-
                     context.getContentResolver().takePersistableUriPermission(
                             data.getData(),
                             Intent.FLAG_GRANT_READ_URI_PERMISSION |
